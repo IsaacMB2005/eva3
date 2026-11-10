@@ -1,0 +1,1185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ equipo.nombre }} - Detalle del Equipo | RentEquip{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Detail Breadcrumb Bar */
+    .detail-breadcrumb-bar {
+        background-color: #11141a;
+        padding: 0.65rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 0.86rem;
+    }
+
+    .detail-breadcrumb-bar a {
+        color: #94a3b8;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .detail-breadcrumb-bar a:hover {
+        color: #f1f5f9;
+    }
+
+    .detail-breadcrumb-bar .breadcrumb-sep {
+        color: #64748b;
+        margin: 0 8px;
+    }
+
+    .detail-breadcrumb-bar .breadcrumb-current {
+        color: #e2e8f0;
+        font-weight: 600;
+    }
+
+    /* Main Product Gallery */
+    .product-gallery-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        padding: 1.25rem;
+        position: relative;
+    }
+
+    .gallery-badge-top {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        z-index: 2;
+    }
+
+    .badge-pill-disponible {
+        background-color: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .badge-pill-arrendado {
+        background-color: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .badge-pill-mantencion {
+        background-color: #fffbeb;
+        color: #d97706;
+        border: 1px solid #fde68a;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .gallery-zoom-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 36px;
+        height: 36px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s;
+        z-index: 2;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .gallery-zoom-btn:hover {
+        color: #0f172a;
+        background: #f8fafc;
+    }
+
+    .gallery-main-img-box {
+        height: 270px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        margin-top: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .gallery-main-img-box img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: all 0.3s ease;
+    }
+
+    /* Thumbnails Slider */
+    .thumbnails-slider-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .thumb-nav-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .thumb-nav-btn:hover {
+        background: var(--brand-yellow);
+        color: #000;
+        border-color: var(--brand-yellow);
+    }
+
+    .thumb-box {
+        width: 58px;
+        height: 58px;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #ffffff;
+        cursor: pointer;
+        transition: all 0.2s;
+        overflow: hidden;
+    }
+
+    .thumb-box img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .thumb-box.active {
+        border-color: var(--brand-yellow) !important;
+        box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.25);
+    }
+
+    /* Middle Column (Product Info & Specs) */
+    .product-category-badge {
+        background-color: #e0f2fe;
+        color: #0284c7;
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 0.6rem;
+    }
+
+    .product-detail-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.5px;
+        margin-bottom: 0.4rem;
+        line-height: 1.2;
+    }
+
+    .product-rating-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 1rem;
+        font-size: 0.88rem;
+    }
+
+    .rating-stars {
+        color: var(--brand-yellow);
+        font-size: 0.95rem;
+    }
+
+    .rating-score {
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .rating-count {
+        color: #64748b;
+    }
+
+    .product-detail-price {
+        font-size: 2.3rem;
+        font-weight: 800;
+        color: var(--brand-yellow);
+        line-height: 1;
+        margin-bottom: 1.15rem;
+    }
+
+    .product-detail-price-unit {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .product-detail-desc {
+        font-size: 0.93rem;
+        color: #475569;
+        line-height: 1.55;
+        margin-bottom: 1.25rem;
+    }
+
+    /* Key Specs 4-item list */
+    .product-key-specs-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        margin-bottom: 1.4rem;
+    }
+
+    .key-spec-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: #334155;
+    }
+
+    .key-spec-icon {
+        width: 22px;
+        color: #1e293b;
+        text-align: center;
+        font-size: 0.95rem;
+    }
+
+    .key-spec-label {
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .product-stock-banner {
+        background-color: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        border-radius: 10px;
+        padding: 0.7rem 1.1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #047857;
+        font-weight: 700;
+        font-size: 0.92rem;
+    }
+
+    /* Right Column (Rental Calculator Box) */
+    .rental-calculator-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    .rental-calc-header {
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        padding: 0.85rem 1.25rem;
+        font-size: 1.05rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .rental-calc-body {
+        padding: 1.35rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.1rem;
+    }
+
+    .calc-row-flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .calc-label {
+        font-size: 0.92rem;
+        color: #475569;
+        font-weight: 600;
+    }
+
+    .calc-val-price {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    /* Days Stepper */
+    .days-stepper-box {
+        display: flex;
+        align-items: center;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        overflow: hidden;
+        width: 100%;
+        background: #ffffff;
+    }
+
+    .stepper-btn {
+        width: 44px;
+        height: 38px;
+        border: none;
+        background: #f8fafc;
+        color: #1e293b;
+        font-size: 1.1rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .stepper-btn:hover {
+        background-color: var(--brand-yellow);
+        color: #000;
+    }
+
+    .stepper-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        text-align: center;
+        font-weight: 700;
+        font-size: 0.98rem;
+        color: #0f172a;
+        background: transparent;
+    }
+
+    .calc-total-val {
+        font-size: 1.55rem;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .btn-calc-submit {
+        width: 100%;
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 0.5rem;
+        font-weight: 800;
+        font-size: 0.96rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-calc-submit:hover {
+        background-color: var(--brand-yellow-hover);
+        color: #000;
+        box-shadow: 0 4px 12px rgba(245, 166, 35, 0.35);
+    }
+
+    .btn-calc-fav {
+        width: 100%;
+        background-color: #ffffff;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 0.65rem 0.5rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-calc-fav:hover {
+        background-color: #f8fafc;
+        color: #e11d48;
+        border-color: #fda4af;
+    }
+
+    .calc-trust-footer {
+        text-align: center;
+        font-size: 0.82rem;
+        color: #475569;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 0.25rem;
+    }
+
+    .calc-trust-footer i {
+        color: #10b981;
+    }
+
+    /* Bottom Section (Tabs & Related Equipment) */
+    .detail-tabs-nav {
+        display: flex;
+        gap: 4px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .detail-tab-btn {
+        background: transparent;
+        border: none;
+        padding: 0.65rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.92rem;
+        color: #64748b;
+        border-radius: 8px 8px 0 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .detail-tab-btn:hover {
+        color: #0f172a;
+    }
+
+    .detail-tab-btn.active {
+        background-color: var(--brand-dark);
+        color: #ffffff !important;
+    }
+
+    .detail-tab-btn.active i {
+        color: var(--brand-yellow);
+    }
+
+    .detail-tab-content-card {
+        background: #ffffff;
+        border-radius: 0 12px 12px 12px;
+        border: 1px solid #e2e8f0;
+        border-top: none;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+
+    .feature-check-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.92rem;
+        color: #334155;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .feature-check-item i {
+        color: var(--brand-yellow);
+        font-size: 1rem;
+    }
+
+    /* Related Equipment Section */
+    .related-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .related-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+    }
+
+    .related-title-bar {
+        width: 4px;
+        height: 20px;
+        background-color: var(--brand-yellow);
+        border-radius: 3px;
+        display: inline-block;
+    }
+
+    .related-card {
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        padding: 0.85rem 0.6rem;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: all 0.2s;
+    }
+
+    .related-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+        border-color: #cbd5e1;
+    }
+
+    .related-card-img-box {
+        height: 85px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+        padding: 4px;
+    }
+
+    .related-card-img-box img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .related-card-name {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .related-card-price {
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: var(--brand-yellow);
+        margin-bottom: 0.25rem;
+    }
+
+    .related-card-status {
+        font-size: 0.72rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        justify-content: center;
+        margin-bottom: 0.65rem;
+    }
+
+    .btn-related-detail {
+        width: 100%;
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        border: none;
+        border-radius: 6px;
+        padding: 0.4rem 0.4rem;
+        font-weight: 700;
+        font-size: 0.78rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: background-color 0.2s;
+    }
+
+    .btn-related-detail:hover {
+        background-color: var(--brand-yellow-hover);
+        color: #000;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Toast / Flash Messages -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}info{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fa-solid {% if message.tags == 'error' %}fa-triangle-exclamation{% elif message.tags == 'success' %}fa-circle-check{% else %}fa-circle-info{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- DETAIL BREADCRUMBS BAR -->
+<nav class="detail-breadcrumb-bar" aria-label="breadcrumb">
+    <div class="container">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'home' %}">
+                <i class="fa-solid fa-house" style="color: var(--brand-yellow);"></i>
+            </a>
+            <span class="breadcrumb-sep">|</span>
+            <a href="{% url 'catalogo' %}">Equipos</a>
+            <span class="breadcrumb-sep">&gt;</span>
+            <span class="breadcrumb-current">{{ equipo.nombre }}</span>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN PRODUCT DETAIL TOP ROW (3 COLUMNS) -->
+<div class="container py-4">
+    <div class="row g-4 align-items-start">
+        
+        <!-- COLUMN 1: PRODUCT IMAGE & THUMBNAILS (4 cols) -->
+        <div class="col-12 col-md-5 col-lg-4">
+            <div class="product-gallery-card">
+                <!-- Top Left Status Badge -->
+                <div class="gallery-badge-top">
+                    {% if equipo.estado == 'DISPONIBLE' %}
+                    <span class="badge-pill-disponible">
+                        <span class="status-dot dot-disponible"></span> Disponible
+                    </span>
+                    {% elif equipo.estado == 'ARRENDADO' %}
+                    <span class="badge-pill-arrendado">
+                        <span class="status-dot dot-arrendado"></span> Arrendado
+                    </span>
+                    {% else %}
+                    <span class="badge-pill-mantencion">
+                        <span class="status-dot dot-mantencion"></span> En Mantención
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Top Right Zoom Icon -->
+                <button type="button" class="gallery-zoom-btn" title="Ampliar imagen" onclick="openZoomModal();">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i>
+                </button>
+
+                <!-- Main Image Box -->
+                <div class="gallery-main-img-box">
+                    {% if equipo.imagen %}
+                    <img id="mainGalleryImg" src="{{ equipo.imagen.url }}" alt="{{ equipo.nombre }}">
+                    {% else %}
+                    <i class="fa-solid fa-screwdriver-wrench fa-4x text-muted"></i>
+                    {% endif %}
+                </div>
+
+                <!-- Thumbnails Slider Row -->
+                <div class="thumbnails-slider-row">
+                    <button type="button" class="thumb-nav-btn" title="Anterior" onclick="prevThumb();">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+
+                    <!-- Thumb 1: Main product -->
+                    <div class="thumb-box active" onclick="switchMainImg(this, '{% if equipo.imagen %}{{ equipo.imagen.url }}{% endif %}');">
+                        {% if equipo.imagen %}
+                        <img src="{{ equipo.imagen.url }}" alt="Vista 1">
+                        {% else %}
+                        <i class="fa-solid fa-image text-muted"></i>
+                        {% endif %}
+                    </div>
+
+                    <!-- Thumb 2: Accessory/Case -->
+                    <div class="thumb-box" onclick="switchMainImg(this, '{% static 'img/taladro_thumb2.png' %}');">
+                        <img src="{% static 'img/taladro_thumb2.png' %}" alt="Vista Maletín" onerror="this.src='{% if equipo.imagen %}{{ equipo.imagen.url }}{% endif %}';">
+                    </div>
+
+                    <!-- Thumb 3: Chuck/Head detail -->
+                    <div class="thumb-box" onclick="switchMainImg(this, '{% static 'img/taladro_thumb3.png' %}');">
+                        <img src="{% static 'img/taladro_thumb3.png' %}" alt="Vista Detalle" onerror="this.src='{% if equipo.imagen %}{{ equipo.imagen.url }}{% endif %}';">
+                    </div>
+
+                    <!-- Thumb 4: Work/Action context -->
+                    <div class="thumb-box" onclick="switchMainImg(this, '{% static 'img/taladro_thumb4.png' %}');">
+                        <img src="{% static 'img/taladro_thumb4.png' %}" alt="Vista En Faena" onerror="this.src='{% if equipo.imagen %}{{ equipo.imagen.url }}{% endif %}';">
+                    </div>
+
+                    <button type="button" class="thumb-nav-btn" title="Siguiente" onclick="nextThumb();">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 2: TECHNICAL INFORMATION & SPECS (5 cols) -->
+        <div class="col-12 col-md-7 col-lg-5">
+            <div>
+                <!-- Category Tag -->
+                <div class="product-category-badge">
+                    <i class="fa-solid fa-wrench"></i> {{ equipo.categoria.nombre }}
+                </div>
+
+                <!-- Product Name -->
+                <h1 class="product-detail-title">{{ equipo.nombre }}</h1>
+
+                <!-- Ratings & Reviews -->
+                <div class="product-rating-row">
+                    <span class="rating-stars">
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star"></i>
+                        <i class="fa-solid fa-star-half-stroke"></i>
+                    </span>
+                    <span class="rating-score">4.7</span>
+                    <span class="rating-count">(128 reseñas)</span>
+                </div>
+
+                <!-- Price Highlight -->
+                <div class="product-detail-price">
+                    {{ equipo.tarifa_formateada }}
+                    <span class="product-detail-price-unit">/ día</span>
+                </div>
+
+                <!-- Short Summary -->
+                <p class="product-detail-desc">
+                    {{ specs.resumen }}
+                </p>
+
+                <!-- Key Specs List with Icons -->
+                <div class="product-key-specs-list">
+                    {% for item in specs.items %}
+                    <div class="key-spec-item">
+                        <span class="key-spec-icon"><i class="{{ item.icon }}"></i></span>
+                        <span class="key-spec-label">{{ item.label }}:</span>
+                        <span>{{ item.value }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Stock Available Banner -->
+                <div>
+                    {% if equipo.stock > 0 %}
+                    <div class="product-stock-banner">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Stock disponible: {{ equipo.stock }} unidades</span>
+                    </div>
+                    {% else %}
+                    <div class="product-stock-banner text-danger bg-danger-subtle border-danger-subtle">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                        <span>Sin stock disponible actualmente (0 unidades)</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 3: RENTAL CALCULATOR CARD (3 cols) -->
+        <div class="col-12 col-lg-3">
+            <div class="rental-calculator-card">
+                <!-- Header -->
+                <div class="rental-calc-header">
+                    <i class="fa-regular fa-calendar-days"></i>
+                    <span>Arriendo de Equipo</span>
+                </div>
+
+                <!-- Body -->
+                <div class="rental-calc-body">
+                    <!-- Daily Rate Row -->
+                    <div class="calc-row-flex">
+                        <span class="calc-label">Precio por día:</span>
+                        <span class="calc-val-price">{{ equipo.tarifa_formateada }}</span>
+                    </div>
+
+                    <!-- Days Stepper Row -->
+                    <div>
+                        <span class="calc-label d-block mb-1">Días de arriendo:</span>
+                        <div class="days-stepper-box">
+                            <button type="button" class="stepper-btn" onclick="adjustDays(-1);">-</button>
+                            <input type="number" id="stepperDaysInput" class="stepper-input" min="1" max="90" value="1" oninput="updateTotalFromInput(this.value);">
+                            <button type="button" class="stepper-btn" onclick="adjustDays(1);">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Total Estimated Price Row -->
+                    <div class="calc-row-flex pt-1 border-top">
+                        <span class="calc-label fs-6 fw-bold">Total:</span>
+                        <span class="calc-total-val" id="calcTotalDisplay">{{ equipo.tarifa_formateada }}</span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="pt-2 d-flex flex-column gap-2">
+                        <form method="POST" action="{% url 'agregar_a_cotizacion' equipo.id %}" id="formCotizarDirecto">
+                            {% csrf_token %}
+                            <input type="hidden" name="dias" id="formDaysInput" value="1">
+                            <input type="hidden" name="cantidad" value="1">
+                            <button type="submit" 
+                                    class="btn-calc-submit" 
+                                    {% if equipo.stock <= 0 or equipo.estado == 'MANTENCION' %}disabled{% endif %}>
+                                <i class="fa-regular fa-calendar-check"></i> Solicitar Arriendo
+                            </button>
+                        </form>
+
+                        <button type="button" class="btn-calc-fav" id="btnToggleFav" onclick="toggleFavorito();">
+                            <i class="fa-regular fa-heart" id="favIcon"></i>
+                            <span id="favText">Agregar a Favoritos</span>
+                        </button>
+                    </div>
+
+                    <!-- Trust Message -->
+                    <div class="calc-trust-footer">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Arriendo seguro y confiable</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM ROW: TABS (LEFT) + RELATED EQUIPMENT (RIGHT) -->
+    <div class="row g-4 mt-3">
+        <!-- LEFT: TABS (DESCRIPCIÓN, ESPECIFICACIONES, CONDICIONES) -->
+        <div class="col-12 col-lg-7">
+            <!-- Tab Buttons Nav -->
+            <div class="detail-tabs-nav" role="tablist">
+                <button class="detail-tab-btn active" id="tab-desc-btn" onclick="switchDetailTab('desc');" type="button">
+                    <i class="fa-regular fa-file-lines"></i> Descripción
+                </button>
+                <button class="detail-tab-btn" id="tab-specs-btn" onclick="switchDetailTab('specs');" type="button">
+                    <i class="fa-solid fa-gear"></i> Especificaciones
+                </button>
+                <button class="detail-tab-btn" id="tab-terms-btn" onclick="switchDetailTab('terms');" type="button">
+                    <i class="fa-solid fa-circle-info"></i> Condiciones de Arriendo
+                </button>
+            </div>
+
+            <!-- Tab Content Card -->
+            <div class="detail-tab-content-card">
+                <!-- Pane 1: Descripción -->
+                <div id="pane-desc">
+                    <p class="text-secondary mb-3" style="font-size: 0.93rem; line-height: 1.6;">
+                        {{ equipo.nombre }} de alta potencia, perfecto para trabajos de construcción, instalaciones y reparaciones. Su diseño compacto y batería de larga duración te permite trabajar sin interrupciones.
+                    </p>
+                    <div class="pt-1">
+                        {% for c in specs.caracteristicas %}
+                        <div class="feature-check-item">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>{{ c }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Pane 2: Especificaciones Técnicas (Table) -->
+                <div id="pane-specs" class="d-none">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover mb-0" style="font-size: 0.88rem;">
+                            <tbody>
+                                {% for par, val in specs.tabla %}
+                                <tr>
+                                    <th class="text-secondary fw-semibold w-50">{{ par }}</th>
+                                    <td class="text-dark fw-bold">{{ val }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pane 3: Condiciones de Arriendo -->
+                <div id="pane-terms" class="d-none">
+                    <div class="d-flex flex-column gap-2" style="font-size: 0.9rem; color: #475569;">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="fa-solid fa-shield-halved text-warning mt-1"></i>
+                            <div>
+                                <strong class="text-dark">Garantía / Depósito:</strong>
+                                Se solicita cheque en garantía o retención en tarjeta de crédito al momento del retiro.
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="fa-solid fa-id-card text-warning mt-1"></i>
+                            <div>
+                                <strong class="text-dark">Documentación Requerida:</strong>
+                                Cédula de identidad vigente del arrendatario o RUT de la empresa con poder notarial.
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="fa-solid fa-rotate-left text-warning mt-1"></i>
+                            <div>
+                                <strong class="text-dark">Devolución y Limpieza:</strong>
+                                El equipo debe devolverse en las mismas condiciones operativas y de aseo en que fue entregado.
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="fa-solid fa-headset text-warning mt-1"></i>
+                            <div>
+                                <strong class="text-dark">Soporte Técnico:</strong>
+                                Asistencia técnica telefónica o cambio inmediato en caso de falla operativa en faena.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: EQUIPOS RELACIONADOS (3 CARDS) -->
+        <div class="col-12 col-lg-5">
+            <!-- Section Header -->
+            <div class="related-section-header">
+                <h3 class="related-title">
+                    <span class="related-title-bar"></span>
+                    Equipos Relacionados
+                </h3>
+                <a href="{% url 'catalogo' %}" class="link-view-all" style="font-size: 0.82rem;">
+                    Ver todos los equipos <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- 3 Product Cards in a row -->
+            <div class="row g-2">
+                {% for rel in equipos_relacionados %}
+                <div class="col-4">
+                    <div class="related-card">
+                        <div class="related-card-img-box">
+                            {% if rel.imagen %}
+                            <img src="{{ rel.imagen.url }}" alt="{{ rel.nombre }}">
+                            {% else %}
+                            <i class="fa-solid fa-wrench text-muted"></i>
+                            {% endif %}
+                        </div>
+
+                        <h5 class="related-card-name" title="{{ rel.nombre }}">{{ rel.nombre }}</h5>
+                        
+                        <div class="related-card-price">
+                            {{ rel.tarifa_formateada }}
+                            <span class="text-muted" style="font-size: 0.68rem; font-weight: normal;">/ día</span>
+                        </div>
+
+                        <div class="related-card-status text-{{ rel.estado|lower }}">
+                            <span class="status-dot dot-{{ rel.estado|lower }}" style="width: 6px; height: 6px;"></span>
+                            {{ rel.get_estado_display }}
+                        </div>
+
+                        <a href="{% url 'detalle_equipo' rel.id %}" class="btn-related-detail">
+                            Ver detalle <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- RENTAL MODAL (Solicitar Arriendo Funcional) -->
+<div class="modal fade" id="rentalModal" tabindex="-1" aria-labelledby="rentalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header text-white" style="background-color: var(--brand-dark);">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="brand-icon-gear" style="width: 30px; height: 30px; font-size: 1rem;">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </span>
+                    <h5 class="modal-title fw-bold" id="rentalModalLabel">Solicitud de Arriendo</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="rentalForm" method="POST" action="{% url 'solicitar_arriendo' equipo.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <div class="modal-body p-4">
+                    <!-- Equipment Summary Box -->
+                    <div class="d-flex gap-3 align-items-center p-3 rounded-3 mb-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                        <div class="equip-img-wrapper" style="width: 75px; height: 75px;">
+                            {% if equipo.imagen %}
+                            <img src="{{ equipo.imagen.url }}" alt="{{ equipo.nombre }}" style="max-height: 100%;">
+                            {% else %}
+                            <i class="fa-solid fa-wrench text-muted"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <span class="badge bg-secondary mb-1">{{ equipo.categoria.nombre }}</span>
+                            <h5 class="fw-bold mb-1">{{ equipo.nombre }}</h5>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="fw-bold fs-5 text-warning">{{ equipo.tarifa_formateada }} / día</span>
+                                <span class="badge bg-light text-dark border">Stock: {{ equipo.stock }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if equipo.estado == 'MANTENCION' %}
+                    <div class="alert alert-warning py-2 mb-3">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Este equipo está en mantención preventiva y no puede ser arrendado actualmente.
+                    </div>
+                    {% elif equipo.stock <= 0 %}
+                    <div class="alert alert-warning py-2 mb-3">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Este equipo se encuentra actualmente sin stock disponible.
+                    </div>
+                    {% endif %}
+
+                    <!-- Rental Form Inputs -->
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Nombre del Cliente / Empresa</label>
+                            <input type="text" name="cliente_nombre" class="form-control" placeholder="Ej: Constructora Los Andes" required value="Isaac Molina">
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Días de Arriendo</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
+                                <input type="number" id="modalInputDias" name="dias" class="form-control" min="1" max="90" value="1" required oninput="recalcModalTotal();">
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Cantidad a Arrendar</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                                <input type="number" id="modalInputCantidad" name="cantidad" class="form-control" min="1" max="{{ equipo.stock }}" value="1" required oninput="recalcModalTotal();">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Estimated Cost Calculation -->
+                    <div class="mt-4 p-3 rounded-3" style="background-color: var(--brand-yellow-light); border: 1.5px dashed var(--brand-yellow);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="small text-muted fw-bold d-block">Total Estimado de Arriendo:</span>
+                                <span class="text-muted" style="font-size: 0.75rem;" id="modalCalcFormula">Tarifa x Días x Cantidad</span>
+                            </div>
+                            <div class="text-end">
+                                <span class="fs-4 fw-extrabold text-dark" id="modalTotalCalculado">{{ equipo.tarifa_formateada }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light border-top-0 px-4 py-3">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="modalBtnConfirm" class="btn btn-warning rounded-pill px-4 fw-bold" {% if equipo.stock <= 0 or equipo.estado == 'MANTENCION' %}disabled{% endif %}>
+                        <i class="fa-solid fa-check me-1"></i> Confirmar Arriendo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const baseTarifa = parseFloat('{{ equipo.tarifa_diaria }}') || 0;
+let currentDays = 1;
+
+function adjustDays(delta) {
+    const input = document.getElementById('stepperDaysInput');
+    let val = parseInt(input.value) || 1;
+    val = Math.max(1, Math.min(90, val + delta));
+    input.value = val;
+    updateTotalFromInput(val);
+}
+
+function updateTotalFromInput(val) {
+    currentDays = Math.max(1, parseInt(val) || 1);
+    const total = Math.round(baseTarifa * currentDays);
+    const formatted = '$' + total.toLocaleString('es-CL');
+    document.getElementById('calcTotalDisplay').textContent = formatted;
+    
+    const formDays = document.getElementById('formDaysInput');
+    if (formDays) {
+        formDays.value = currentDays;
+    }
+
+    // Also sync with modal days input
+    const modalDays = document.getElementById('modalInputDias');
+    if (modalDays) {
+        modalDays.value = currentDays;
+        recalcModalTotal();
+    }
+}
+
+function recalcModalTotal() {
+    const days = Math.max(1, parseInt(document.getElementById('modalInputDias').value) || 1);
+    const qty = Math.max(1, parseInt(document.getElementById('modalInputCantidad').value) || 1);
+    const total = Math.round(baseTarifa * days * qty);
+    
+    document.getElementById('modalTotalCalculado').textContent = '$' + total.toLocaleString('es-CL');
+    document.getElementById('modalCalcFormula').textContent = `$${Math.round(baseTarifa).toLocaleString('es-CL')} x ${days} día(s) x ${qty} unid.`;
+}
+
+// Thumbnails image swapper
+function switchMainImg(boxEl, newSrc) {
+    if (!newSrc) return;
+    document.getElementById('mainGalleryImg').src = newSrc;
+    document.querySelectorAll('.thumb-box').forEach(b => b.classList.remove('active'));
+    boxEl.classList.add('active');
+}
+
+let thumbIndex = 0;
+function nextThumb() {
+    const thumbs = document.querySelectorAll('.thumb-box');
+    thumbIndex = (thumbIndex + 1) % thumbs.length;
+    thumbs[thumbIndex].click();
+}
+
+function prevThumb() {
+    const thumbs = document.querySelectorAll('.thumb-box');
+    thumbIndex = (thumbIndex - 1 + thumbs.length) % thumbs.length;
+    thumbs[thumbIndex].click();
+}
+
+// Tabs switcher
+function switchDetailTab(tabName) {
+    ['desc', 'specs', 'terms'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}-btn`);
+        const pane = document.getElementById(`pane-${t}`);
+        if (t === tabName) {
+            btn.classList.add('active');
+            pane.classList.remove('d-none');
+        } else {
+            btn.classList.remove('active');
+            pane.classList.add('d-none');
+        }
+    });
+}
+
+// Favorites toggle
+let isFav = false;
+function toggleFavorito() {
+    isFav = !isFav;
+    const icon = document.getElementById('favIcon');
+    const text = document.getElementById('favText');
+    const btn = document.getElementById('btnToggleFav');
+
+    if (isFav) {
+        icon.className = 'fa-solid fa-heart text-danger';
+        text.textContent = 'En Favoritos';
+        btn.classList.add('border-danger');
+    } else {
+        icon.className = 'fa-regular fa-heart';
+        text.textContent = 'Agregar a Favoritos';
+        btn.classList.remove('border-danger');
+    }
+}
+
+function openZoomModal() {
+    const imgUrl = document.getElementById('mainGalleryImg').src;
+    window.open(imgUrl, '_blank');
+}
+</script>
+{% endblock %}

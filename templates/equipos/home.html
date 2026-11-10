@@ -1,0 +1,825 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}RentEquip - Arrienda Herramientas y Maquinaria{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Hero Section Clean */
+    .hero-section {
+        background-color: var(--brand-dark);
+        position: relative;
+        overflow: hidden;
+        color: white;
+        padding: 3rem 0 4.5rem 0;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-title {
+        font-size: 2.75rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        line-height: 1.15;
+        margin-bottom: 0.4rem;
+    }
+
+    .hero-title span {
+        color: var(--brand-yellow);
+    }
+
+    .hero-tagline {
+        font-size: 1.85rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 0.85rem;
+    }
+
+    .hero-desc {
+        font-size: 1rem;
+        color: #94a3b8;
+        max-width: 480px;
+        line-height: 1.55;
+        margin-bottom: 1.75rem;
+    }
+
+    .btn-explore {
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        font-weight: 700;
+        font-size: 0.95rem;
+        border-radius: 50px;
+        padding: 0.65rem 1.6rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
+        text-decoration: none;
+        transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .btn-explore:hover {
+        background-color: var(--brand-yellow-hover);
+        color: #000;
+        transform: translateY(-2px);
+    }
+
+    /* Hero Right Excavator Card with Floating Badges (Clean) */
+    .hero-image-card {
+        position: relative;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        height: 220px;
+        background-color: #11141a;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-image-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .hero-floating-badges {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 3;
+    }
+
+    .hero-badge-pill {
+        background: rgba(18, 21, 27, 0.88);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 6px 14px;
+        border-radius: 25px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #f1f5f9;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+        white-space: nowrap;
+    }
+
+    .hero-badge-pill i {
+        color: var(--brand-yellow);
+        font-size: 0.95rem;
+    }
+
+    /* Floating Search Bar */
+    .search-bar-wrapper {
+        margin-top: -2rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .search-pill-card {
+        background: #ffffff;
+        border-radius: 50px;
+        padding: 6px 8px 6px 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #edf0f5;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .search-input-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        min-width: 220px;
+    }
+
+    .search-input-group i {
+        color: #94a3b8;
+        font-size: 1.1rem;
+    }
+
+    .search-input-group input {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-size: 0.95rem;
+        color: #1e293b;
+        background: transparent;
+    }
+
+    .search-divider {
+        width: 1px;
+        height: 28px;
+        background-color: #e2e8f0;
+    }
+
+    .search-select-group {
+        min-width: 180px;
+    }
+
+    .search-select-group select {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #475569;
+        background: transparent;
+        cursor: pointer;
+    }
+
+    .btn-search-pill {
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        font-weight: 700;
+        font-size: 0.92rem;
+        border-radius: 40px;
+        padding: 0.6rem 1.8rem;
+        border: none;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-search-pill:hover {
+        background-color: var(--brand-yellow-hover);
+        color: #000;
+    }
+
+    /* KPI / Control de Inventario */
+    .kpi-chip-container {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .kpi-chip {
+        background: #ffffff;
+        border: 1px solid var(--brand-gray-border);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #475569;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .kpi-chip:hover, .kpi-chip.active {
+        border-color: var(--brand-yellow);
+        background: var(--brand-yellow-light);
+        color: #14171d;
+    }
+
+    .kpi-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    /* Section Title */
+    .section-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 2rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+    }
+
+    .section-title-bar {
+        width: 4px;
+        height: 22px;
+        background-color: var(--brand-yellow);
+        border-radius: 3px;
+        display: inline-block;
+    }
+
+    .link-view-all {
+        color: #1e293b;
+        font-weight: 700;
+        font-size: 0.92rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+    .link-view-all:hover {
+        color: var(--brand-yellow-hover);
+    }
+
+    /* Equipment Cards (Horizontal Top + Clean Bottom Button) */
+    .equip-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        padding: 1.15rem 1rem 1rem 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .equip-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.07);
+        border-color: #cbd5e1;
+    }
+
+    .equip-card-top {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 0.85rem;
+    }
+
+    .equip-img-wrapper {
+        width: 85px;
+        height: 85px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fafbfc;
+        border-radius: 10px;
+        padding: 6px;
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+    }
+
+    .equip-img-wrapper img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+
+    .equip-card:hover .equip-img-wrapper img {
+        transform: scale(1.06);
+    }
+
+    .equip-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .equip-category-tag {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .equip-title {
+        font-size: 0.98rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .equip-price {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--brand-yellow);
+        line-height: 1.1;
+        margin-bottom: 0.35rem;
+    }
+
+    .equip-price-unit {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #94a3b8;
+    }
+
+    .equip-meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #475569;
+        gap: 6px;
+    }
+
+    .btn-rent-now {
+        width: 100%;
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        border: none;
+        border-radius: 8px;
+        padding: 0.65rem 0.5rem;
+        font-weight: 800;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-rent-now:hover {
+        background-color: var(--brand-yellow-hover);
+        color: #000;
+        box-shadow: 0 4px 12px rgba(245, 166, 35, 0.35);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Toast / Flash Messages -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}info{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fa-solid {% if message.tags == 'error' %}fa-triangle-exclamation{% elif message.tags == 'success' %}fa-circle-check{% else %}fa-circle-info{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <!-- Left Hero Content -->
+            <div class="col-lg-6 hero-content">
+                <h1 class="hero-title">Rent<span>Equip</span></h1>
+                <h2 class="hero-tagline">Arrienda. Trabaja. Avanza.</h2>
+                <p class="hero-desc">
+                    Encuentra y arrienda herramientas y maquinaria de forma rápida, segura y al mejor precio.
+                </p>
+                <div>
+                    <a href="{% url 'catalogo' %}" class="btn-explore">
+                        <i class="fa-solid fa-magnifying-glass"></i> Explorar Equipos <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Hero Image Card (Clean rounded container with badges) -->
+            <div class="col-lg-6">
+                <div class="hero-image-card">
+                    <img src="{% static 'img/hero_clean.png' %}" alt="Excavadora RentEquip">
+                    
+                    <!-- Floating Feature Badges (Single crisp layer) -->
+                    <div class="hero-floating-badges d-none d-md-flex">
+                        <div class="hero-badge-pill">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Equipos en excelente estado</span>
+                        </div>
+                        <div class="hero-badge-pill">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>Reserva rápida y sencilla</span>
+                        </div>
+                        <div class="hero-badge-pill">
+                            <i class="fa-solid fa-headset"></i>
+                            <span>Soporte personalizado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FLOATING SEARCH BAR -->
+<div class="container search-bar-wrapper">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <form method="GET" action="{% url 'home' %}#catalogo" class="search-pill-card">
+                <!-- Search Input -->
+                <div class="search-input-group">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" name="q" value="{{ search_query }}" placeholder="Buscar equipos..." autocomplete="off">
+                </div>
+
+                <div class="search-divider d-none d-md-block"></div>
+
+                <!-- Category Dropdown -->
+                <div class="search-select-group">
+                    <select name="categoria">
+                        <option value="">Todas las categorías</option>
+                        {% for cat in categorias %}
+                        <option value="{{ cat.id }}" {% if categoria_seleccionada == cat.id %}selected{% endif %}>
+                            {{ cat.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="search-divider d-none d-md-block"></div>
+
+                <!-- Estado Operativo Dropdown -->
+                <div class="search-select-group" style="min-width: 170px;">
+                    <select name="estado">
+                        <option value="">Todos los estados</option>
+                        <option value="DISPONIBLE" {% if estado_filtro == 'DISPONIBLE' %}selected{% endif %}>🟢 Disponible</option>
+                        <option value="ARRENDADO" {% if estado_filtro == 'ARRENDADO' %}selected{% endif %}>🔵 Arrendado</option>
+                        <option value="MANTENCION" {% if estado_filtro == 'MANTENCION' %}selected{% endif %}>🟠 En Mantención</option>
+                    </select>
+                </div>
+
+                <!-- Search Button -->
+                <button type="submit" class="btn-search-pill ms-auto">
+                    Buscar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CATALOG SECTION -->
+<section id="catalogo" class="container py-4">
+    <!-- Live Inventory Status KPI Bar (Ideal para control exacto de stock y estado) -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-2">
+        <div class="kpi-chip-container">
+            <span class="text-muted small fw-bold text-uppercase me-1"><i class="fa-solid fa-sliders me-1"></i> CONTROL DE INVENTARIO:</span>
+            <a href="{% url 'home' %}#catalogo" class="kpi-chip {% if not estado_filtro %}active{% endif %}">
+                <i class="fa-solid fa-boxes-stacked"></i> Todos ({{ kpi.total }})
+            </a>
+            <a href="{% url 'home' %}?estado=DISPONIBLE#catalogo" class="kpi-chip {% if estado_filtro == 'DISPONIBLE' %}active{% endif %}">
+                <span class="kpi-dot dot-disponible"></span> Disponibles ({{ kpi.disponibles }})
+            </a>
+            <a href="{% url 'home' %}?estado=ARRENDADO#catalogo" class="kpi-chip {% if estado_filtro == 'ARRENDADO' %}active{% endif %}">
+                <span class="kpi-dot dot-arrendado"></span> Arrendados ({{ kpi.arrendados }})
+            </a>
+            <a href="{% url 'home' %}?estado=MANTENCION#catalogo" class="kpi-chip {% if estado_filtro == 'MANTENCION' %}active{% endif %}">
+                <span class="kpi-dot dot-mantencion"></span> En Mantención ({{ kpi.mantencion }})
+            </a>
+        </div>
+
+        <!-- Price Sort Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-sm btn-white border dropdown-toggle fw-semibold" type="button" data-bs-toggle="dropdown">
+                <i class="fa-solid fa-arrow-down-short-wide me-1 text-muted"></i>
+                {% if orden == 'precio_asc' %}Tarifa: Menor a Mayor
+                {% elif orden == 'precio_desc' %}Tarifa: Mayor a Menor
+                {% elif orden == 'stock_desc' %}Mayor Stock
+                {% else %}Ordenar por Tarifa
+                {% endif %}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                <li><a class="dropdown-item" href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if categoria_seleccionada %}categoria={{ categoria_seleccionada }}&{% endif %}{% if estado_filtro %}estado={{ estado_filtro }}&{% endif %}orden=precio_asc#catalogo">Tarifa Diaria: Menor a Mayor</a></li>
+                <li><a class="dropdown-item" href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if categoria_seleccionada %}categoria={{ categoria_seleccionada }}&{% endif %}{% if estado_filtro %}estado={{ estado_filtro }}&{% endif %}orden=precio_desc#catalogo">Tarifa Diaria: Mayor a Menor</a></li>
+                <li><a class="dropdown-item" href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if categoria_seleccionada %}categoria={{ categoria_seleccionada }}&{% endif %}{% if estado_filtro %}estado={{ estado_filtro }}&{% endif %}orden=stock_desc#catalogo">Mayor Stock Disponible</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Section Header Row -->
+    <div class="section-header-row">
+        <h3 class="section-title">
+            <span class="section-title-bar"></span>
+            Equipos Destacados
+        </h3>
+        <a href="{% url 'catalogo' %}" class="link-view-all">
+            Ver todos los equipos <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+
+    <!-- Active Filters Indicators -->
+    {% if search_query or categoria_seleccionada or estado_filtro or orden %}
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <span class="badge bg-light text-dark border">
+            Filtros aplicados
+            {% if search_query %} | "{{ search_query }}"{% endif %}
+            {% if estado_filtro %} | Estado: {{ estado_filtro }}{% endif %}
+        </span>
+        <a href="{% url 'home' %}#catalogo" class="small text-danger text-decoration-none fw-semibold">
+            <i class="fa-solid fa-xmark me-1"></i>Limpiar filtros
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Equipment Cards Grid (4 columns desktop) -->
+    <div class="row g-3 g-xl-4">
+        {% for item in equipos %}
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="equip-card">
+                <!-- Top: Image (left) + Information (right) -->
+                <div class="equip-card-top">
+                    <a href="{% url 'detalle_equipo' item.id %}" class="equip-img-wrapper" title="Ver detalle de {{ item.nombre }}">
+                        {% if item.imagen %}
+                        <img src="{{ item.imagen.url }}" alt="{{ item.nombre }}">
+                        {% else %}
+                        <i class="fa-solid fa-screwdriver-wrench fa-2x text-muted"></i>
+                        {% endif %}
+                    </a>
+                    
+                    <div class="equip-info">
+                        <div class="equip-category-tag">{{ item.categoria.nombre }}</div>
+                        <a href="{% url 'detalle_equipo' item.id %}" class="text-decoration-none" title="Ver detalle de {{ item.nombre }}">
+                            <h4 class="equip-title">{{ item.nombre }}</h4>
+                        </a>
+                        
+                        <!-- Tarifa Diaria (Highlight) -->
+                        <div class="equip-price">
+                            {{ item.tarifa_formateada }}
+                            <span class="equip-price-unit">/ día</span>
+                        </div>
+
+                        <!-- Stock & Estado Row -->
+                        <div class="equip-meta-row">
+                            <span class="equip-stock" title="Stock disponible para arriendo">
+                                <i class="fa-solid fa-box text-muted"></i> Stock: {{ item.stock }}
+                            </span>
+                            <span class="status-dot-badge text-{{ item.estado|lower }}">
+                                <span class="status-dot dot-{{ item.estado|lower }}"></span>
+                                {{ item.get_estado_display }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom: Action Button (Clean, no extra clutter) -->
+                <div>
+                    <button type="button" 
+                            class="btn-rent-now" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#rentalModal"
+                            data-id="{{ item.id }}"
+                            data-nombre="{{ item.nombre }}"
+                            data-tarifa="{{ item.tarifa_diaria }}"
+                            data-tarifa-formateada="{{ item.tarifa_formateada }}"
+                            data-stock="{{ item.stock }}"
+                            data-estado="{{ item.estado }}"
+                            data-estado-display="{{ item.get_estado_display }}"
+                            data-categoria="{{ item.categoria.nombre }}"
+                            data-img="{% if item.imagen %}{{ item.imagen.url }}{% endif %}">
+                        <i class="fa-regular fa-calendar-days"></i> Arrendar Ahora
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 py-5 text-center">
+            <div class="p-5 bg-white rounded-4 border shadow-sm">
+                <i class="fa-solid fa-magnifying-glass fa-3x text-muted mb-3"></i>
+                <h4 class="fw-bold">No se encontraron equipos</h4>
+                <p class="text-muted">No hay equipos que coincidan con los criterios de búsqueda seleccionados.</p>
+                <a href="{% url 'home' %}#catalogo" class="btn btn-warning rounded-pill px-4 fw-bold">
+                    Ver todos los equipos
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- RENTAL MODAL (Arrendar Ahora Funcional) -->
+<div class="modal fade" id="rentalModal" tabindex="-1" aria-labelledby="rentalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <!-- Modal Header -->
+            <div class="modal-header text-white" style="background-color: var(--brand-dark);">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="brand-icon-gear" style="width: 30px; height: 30px; font-size: 1rem;">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </span>
+                    <h5 class="modal-title fw-bold" id="rentalModalLabel">Solicitud de Arriendo</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="rentalForm" method="POST" action="">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <!-- Equipment Summary Box -->
+                    <div class="d-flex gap-3 align-items-center p-3 rounded-3 mb-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                        <div id="modalEquipImgWrapper" class="equip-img-wrapper" style="width: 75px; height: 75px;">
+                            <img id="modalEquipImg" src="" alt="Equipo" style="max-height: 100%;">
+                        </div>
+                        <div>
+                            <span id="modalEquipCategoria" class="badge bg-secondary mb-1">Categoría</span>
+                            <h5 id="modalEquipNombre" class="fw-bold mb-1">Nombre Equipo</h5>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="fw-bold fs-5 text-warning" id="modalEquipTarifa">$0 / día</span>
+                                <span id="modalEquipStockBadge" class="badge bg-light text-dark border">Stock: 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning if in maintenance or out of stock -->
+                    <div id="modalWarning" class="alert alert-warning d-none py-2 mb-3" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                        <span id="modalWarningText"></span>
+                    </div>
+
+                    <!-- Rental Form Inputs -->
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Nombre del Cliente / Empresa</label>
+                            <input type="text" name="cliente_nombre" class="form-control" placeholder="Ej: Constructora Los Andes" required value="Isaac Molina">
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Días de Arriendo</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
+                                <input type="number" id="inputDias" name="dias" class="form-control" min="1" max="90" value="3" required>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Cantidad a Arrendar</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                                <input type="number" id="inputCantidad" name="cantidad" class="form-control" min="1" value="1" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Estimated Cost Calculation -->
+                    <div class="mt-4 p-3 rounded-3" style="background-color: var(--brand-yellow-light); border: 1.5px dashed var(--brand-yellow);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="small text-muted fw-bold d-block">Total Estimado de Arriendo:</span>
+                                <span class="text-muted" style="font-size: 0.75rem;" id="calcFormula">Tarifa x Días x Cantidad</span>
+                            </div>
+                            <div class="text-end">
+                                <span class="fs-4 fw-extrabold text-dark" id="modalTotalCalculado">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light border-top-0 px-4 py-3 d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="btnConfirmRental" class="btn btn-warning rounded-pill px-4 fw-bold">
+                        <i class="fa-solid fa-cart-shopping me-1"></i> Arrendar Ahora (Guardar en Sesión)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const rentalModal = document.getElementById('rentalModal');
+    if (!rentalModal) return;
+
+    let currentTarifa = 0;
+    let currentStock = 0;
+    let currentEstado = '';
+
+    rentalModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const nombre = button.getAttribute('data-nombre');
+        const tarifa = parseFloat(button.getAttribute('data-tarifa')) || 0;
+        const tarifaFormateada = button.getAttribute('data-tarifa-formateada');
+        const stock = parseInt(button.getAttribute('data-stock')) || 0;
+        const estado = button.getAttribute('data-estado');
+        const estadoDisplay = button.getAttribute('data-estado-display');
+        const categoria = button.getAttribute('data-categoria');
+        const img = button.getAttribute('data-img');
+
+        currentTarifa = tarifa;
+        currentStock = stock;
+        currentEstado = estado;
+
+        // Set action url
+        const form = document.getElementById('rentalForm');
+        form.action = `/arrendar/${id}/`;
+
+        // Update modal elements
+        document.getElementById('modalEquipNombre').textContent = nombre;
+        document.getElementById('modalEquipCategoria').textContent = categoria;
+        document.getElementById('modalEquipTarifa').textContent = `${tarifaFormateada} / día`;
+        document.getElementById('modalEquipStockBadge').textContent = `Stock disponible: ${stock}`;
+
+        const imgEl = document.getElementById('modalEquipImg');
+        if (img) {
+            imgEl.src = img;
+            imgEl.style.display = 'block';
+        } else {
+            imgEl.style.display = 'none';
+        }
+
+        const inputCantidad = document.getElementById('inputCantidad');
+        inputCantidad.max = Math.max(1, stock);
+        inputCantidad.value = stock > 0 ? 1 : 0;
+
+        const warningEl = document.getElementById('modalWarning');
+        const warningText = document.getElementById('modalWarningText');
+        const btnConfirm = document.getElementById('btnConfirmRental');
+
+        if (estado === 'MANTENCION') {
+            warningEl.classList.remove('d-none');
+            warningText.textContent = 'Este equipo está en mantención preventiva y no puede ser arrendado actualmente.';
+            btnConfirm.disabled = true;
+        } else if (stock <= 0) {
+            warningEl.classList.remove('d-none');
+            warningText.textContent = 'Este equipo se encuentra totalmente arrendado (Stock: 0).';
+            btnConfirm.disabled = true;
+        } else {
+            warningEl.classList.add('d-none');
+            btnConfirm.disabled = false;
+        }
+
+        recalculateTotal();
+    });
+
+    const inputDias = document.getElementById('inputDias');
+    const inputCantidad = document.getElementById('inputCantidad');
+
+    function recalculateTotal() {
+        const dias = Math.max(1, parseInt(inputDias.value) || 1);
+        const cantidad = Math.max(1, parseInt(inputCantidad.value) || 1);
+        const total = Math.round(currentTarifa * dias * cantidad);
+
+        const formatted = '$' + total.toLocaleString('es-CL');
+        document.getElementById('modalTotalCalculado').textContent = formatted;
+        document.getElementById('calcFormula').textContent = `$${Math.round(currentTarifa).toLocaleString('es-CL')} x ${dias} día(s) x ${cantidad} unid.`;
+    }
+
+    inputDias.addEventListener('input', recalculateTotal);
+    inputCantidad.addEventListener('input', recalculateTotal);
+});
+</script>
+{% endblock %}

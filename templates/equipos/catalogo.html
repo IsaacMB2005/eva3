@@ -1,0 +1,936 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Catálogo de Equipos - RentEquip{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Catalog Top Banner */
+    .catalog-banner-section {
+        background-color: var(--brand-dark);
+        position: relative;
+        overflow: hidden;
+        color: white;
+        padding: 2.25rem 0 2rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Caution hazard angled stripes on far left */
+    .hazard-stripe-accent {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 18px;
+        background: repeating-linear-gradient(
+            -45deg,
+            var(--brand-yellow),
+            var(--brand-yellow) 10px,
+            #14171d 10px,
+            #14171d 20px
+        );
+        z-index: 2;
+    }
+
+    .catalog-banner-content {
+        position: relative;
+        z-index: 3;
+        padding-left: 10px;
+    }
+
+    .catalog-title {
+        font-size: 2.3rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 0.35rem;
+    }
+
+    .catalog-title span {
+        color: var(--brand-yellow);
+    }
+
+    .catalog-subtitle {
+        font-size: 1rem;
+        color: #94a3b8;
+        margin-bottom: 0;
+    }
+
+    .catalog-banner-bg-img {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        max-width: 55%;
+        object-fit: cover;
+        opacity: 0.9;
+        mask-image: linear-gradient(to right, transparent 0%, black 35%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%);
+    }
+
+    /* Breadcrumbs Bar */
+    .catalog-breadcrumbs-bar {
+        background-color: #11141a;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.84rem;
+    }
+
+    .breadcrumb-item-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #94a3b8;
+        text-decoration: none;
+    }
+
+    .breadcrumb-item-custom i {
+        color: var(--brand-yellow);
+    }
+
+    .breadcrumb-item-custom:hover {
+        color: #f1f5f9;
+    }
+
+    .breadcrumb-sep {
+        color: #64748b;
+        margin: 0 8px;
+    }
+
+    .breadcrumb-current {
+        color: #e2e8f0;
+        font-weight: 600;
+    }
+
+    /* Sidebar Filters Card */
+    .sidebar-filter-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+
+    .sidebar-filter-header {
+        background-color: var(--brand-dark);
+        color: #ffffff;
+        padding: 0.85rem 1.15rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem;
+        font-weight: 700;
+    }
+
+    .sidebar-filter-header i {
+        color: var(--brand-yellow);
+        font-size: 1.1rem;
+    }
+
+    .sidebar-filter-body {
+        padding: 1.25rem 1.15rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .filter-group-label {
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.45rem;
+        display: block;
+    }
+
+    .filter-select {
+        width: 100%;
+        padding: 0.55rem 0.85rem;
+        font-size: 0.86rem;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        background-color: #ffffff;
+        color: #334155;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .filter-select:focus {
+        border-color: var(--brand-yellow);
+        box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.15);
+    }
+
+    /* Radio buttons for Estado */
+    .filter-radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-radio-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.86rem;
+        color: #475569;
+        cursor: pointer;
+        font-weight: 500;
+        user-select: none;
+    }
+
+    .filter-radio-label input[type="radio"] {
+        accent-color: var(--brand-yellow);
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .filter-radio-label:hover {
+        color: #0f172a;
+    }
+
+    /* Price Range Inputs & Slider */
+    .price-range-inputs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 0.75rem;
+    }
+
+    .price-input-box {
+        flex: 1;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 0.35rem 0.6rem;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #334155;
+        text-align: center;
+    }
+
+    .price-slider-track {
+        accent-color: var(--brand-yellow);
+        width: 100%;
+        height: 5px;
+        cursor: pointer;
+    }
+
+    /* Button Limpiar Filtros */
+    .btn-clear-filters {
+        width: 100%;
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        border: none;
+        border-radius: 8px;
+        padding: 0.65rem 0.5rem;
+        font-weight: 700;
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-clear-filters:hover {
+        background-color: var(--brand-yellow-hover);
+        color: #000;
+        box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3);
+    }
+
+    /* Top Search & Sort Bar (Catalog view) */
+    .catalog-top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+    }
+
+    .catalog-search-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        min-width: 250px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .catalog-search-box i {
+        color: #94a3b8;
+    }
+
+    .catalog-search-box input {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-size: 0.92rem;
+        color: #1e293b;
+        background: transparent;
+    }
+
+    .catalog-sort-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        color: #334155;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .catalog-sort-select {
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 0.5rem 0.9rem;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: #334155;
+        outline: none;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    /* Vertical Card Style (Catalog 8-Grid layout) */
+    .catalog-card {
+        background: #ffffff;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+        padding: 1.15rem 1rem 1rem 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        transition: all 0.25s ease;
+        text-align: center;
+    }
+
+    .catalog-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+        border-color: #cbd5e1;
+    }
+
+    .catalog-card-img-box {
+        height: 110px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.85rem;
+        padding: 4px;
+    }
+
+    .catalog-card-img-box img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+    }
+
+    .catalog-card:hover .catalog-card-img-box img {
+        transform: scale(1.08);
+    }
+
+    .catalog-card-title {
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.35rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .catalog-card-price {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--brand-yellow);
+        line-height: 1.1;
+        margin-bottom: 0.45rem;
+    }
+
+    .catalog-card-price-unit {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: #94a3b8;
+    }
+
+    .catalog-card-meta-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        margin-bottom: 0.95rem;
+    }
+
+    .catalog-stock-tag {
+        color: #475569;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .catalog-status-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 700;
+    }
+
+    .btn-catalog-rent {
+        width: 100%;
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        border: none;
+        border-radius: 8px;
+        padding: 0.6rem 0.5rem;
+        font-weight: 700;
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .btn-catalog-rent:hover {
+        background-color: var(--brand-yellow-hover);
+        color: #000;
+        box-shadow: 0 4px 12px rgba(245, 166, 35, 0.35);
+    }
+
+    /* Bottom Pagination Strip */
+    .catalog-pagination-bar {
+        background-color: var(--brand-dark);
+        border-radius: 12px;
+        padding: 0.75rem 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #ffffff;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .pagination-counter {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #d1d5db;
+    }
+
+    .pagination-counter i {
+        color: var(--brand-yellow);
+        font-size: 1.1rem;
+    }
+
+    .pagination-controls {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .page-btn {
+        min-width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        background-color: #1c212a;
+    }
+
+    .page-btn:hover {
+        background-color: #272e3b;
+        color: #ffffff;
+    }
+
+    .page-btn.active {
+        background-color: var(--brand-yellow) !important;
+        color: #14171d !important;
+        border-color: var(--brand-yellow) !important;
+    }
+
+    .page-btn.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Toast / Flash Messages -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}info{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fa-solid {% if message.tags == 'error' %}fa-triangle-exclamation{% elif message.tags == 'success' %}fa-circle-check{% else %}fa-circle-info{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- TOP BANNER SECTION -->
+<section class="catalog-banner-section">
+    <!-- Hazard Stripes on Left -->
+    <div class="hazard-stripe-accent"></div>
+
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-7 catalog-banner-content">
+                <h1 class="catalog-title">Catálogo de <span>Equipos</span></h1>
+                <p class="catalog-subtitle">
+                    Encuentra y arrienda las mejores herramientas y maquinaria para tu proyecto.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Excavator image on right -->
+    <img src="{% static 'img/hero_excavator.png' %}" alt="Excavadora RentEquip" class="catalog-banner-bg-img d-none d-md-block">
+</section>
+
+<!-- BREADCRUMBS BAR -->
+<nav class="catalog-breadcrumbs-bar" aria-label="breadcrumb">
+    <div class="container">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'home' %}" class="breadcrumb-item-custom">
+                <i class="fa-solid fa-house"></i> Inicio
+            </a>
+            <span class="breadcrumb-sep">&gt;</span>
+            <span class="breadcrumb-current">Equipos</span>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN CATALOG CONTENT (2 COLUMNS: SIDEBAR FILTERS + PRODUCTS GRID) -->
+<div class="container py-4">
+    <form id="filtroForm" method="GET" action="{% url 'catalogo' %}">
+        <div class="row g-4">
+            
+            <!-- LEFT COLUMN: SIDEBAR FILTROS -->
+            <div class="col-12 col-lg-3 col-xl-3">
+                <div class="sidebar-filter-card">
+                    <!-- Sidebar Header -->
+                    <div class="sidebar-filter-header">
+                        <i class="fa-solid fa-filter"></i>
+                        <span>Filtros</span>
+                    </div>
+
+                    <!-- Sidebar Body -->
+                    <div class="sidebar-filter-body">
+                        <!-- 1. Categoría -->
+                        <div>
+                            <label class="filter-group-label">Categoría</label>
+                            <select name="categoria" class="filter-select" onchange="document.getElementById('filtroForm').submit();">
+                                <option value="">Todas las categorías</option>
+                                {% for cat in categorias %}
+                                <option value="{{ cat.id }}" {% if categoria_seleccionada == cat.id %}selected{% endif %}>
+                                    {{ cat.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- 2. Estado -->
+                        <div>
+                            <label class="filter-group-label">Estado</label>
+                            <div class="filter-radio-group">
+                                <label class="filter-radio-label">
+                                    <input type="radio" name="estado" value="" {% if estado_filtro == 'TODOS' or not estado_filtro %}checked{% endif %} onchange="document.getElementById('filtroForm').submit();">
+                                    <span>Todos</span>
+                                </label>
+                                <label class="filter-radio-label">
+                                    <input type="radio" name="estado" value="DISPONIBLE" {% if estado_filtro == 'DISPONIBLE' %}checked{% endif %} onchange="document.getElementById('filtroForm').submit();">
+                                    <span>Disponibles</span>
+                                </label>
+                                <label class="filter-radio-label">
+                                    <input type="radio" name="estado" value="ARRENDADO" {% if estado_filtro == 'ARRENDADO' %}checked{% endif %} onchange="document.getElementById('filtroForm').submit();">
+                                    <span>Arrendados</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 3. Rango de Precio (por día) -->
+                        <div>
+                            <label class="filter-group-label">Rango de Precio (por día)</label>
+                            <div class="price-range-inputs">
+                                <input type="text" id="displayPrecioMin" class="price-input-box" value="${{ precio_min }}" readonly>
+                                <span class="text-muted small">a</span>
+                                <input type="text" id="displayPrecioMax" class="price-input-box" value="${{ precio_max }}" readonly>
+                            </div>
+                            <!-- Hidden inputs submitted in form -->
+                            <input type="hidden" id="inputPrecioMin" name="precio_min" value="{{ precio_min }}">
+                            <input type="hidden" id="inputPrecioMax" name="precio_max" value="{{ precio_max }}">
+                            <!-- Range slider control -->
+                            <input type="range" class="price-slider-track" min="0" max="100000" step="5000" value="{{ precio_max }}" id="priceRangeSlider" oninput="updatePriceSlider(this.value);" onchange="document.getElementById('filtroForm').submit();">
+                        </div>
+
+                        <!-- 4. Stock -->
+                        <div>
+                            <label class="filter-group-label">Stock</label>
+                            <select name="stock" class="filter-select" onchange="document.getElementById('filtroForm').submit();">
+                                <option value="todos" {% if stock_filtro == 'todos' %}selected{% endif %}>Todos</option>
+                                <option value="con_stock" {% if stock_filtro == 'con_stock' %}selected{% endif %}>Con stock disponible (&gt;0)</option>
+                                <option value="sin_stock" {% if stock_filtro == 'sin_stock' %}selected{% endif %}>Sin stock (=0)</option>
+                            </select>
+                        </div>
+
+                        <!-- 5. Limpiar Filtros -->
+                        <div class="pt-2">
+                            <a href="{% url 'catalogo' %}" class="btn-clear-filters">
+                                <i class="fa-solid fa-arrows-rotate"></i> Limpiar Filtros
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: TOP BAR + 8-CARD GRID + PAGINATION -->
+            <div class="col-12 col-lg-9 col-xl-9">
+                <!-- Top Search & Sort Bar -->
+                <div class="catalog-top-bar">
+                    <!-- Text Search input -->
+                    <div class="catalog-search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="q" value="{{ search_query }}" placeholder="Buscar equipos..." autocomplete="off">
+                    </div>
+
+                    <!-- Sort Dropdown -->
+                    <div class="catalog-sort-box">
+                        <span><i class="fa-solid fa-arrow-down-short-wide me-1"></i> Ordenar por:</span>
+                        <select name="orden" class="catalog-sort-select" onchange="document.getElementById('filtroForm').submit();">
+                            <option value="recientes" {% if orden == 'recientes' %}selected{% endif %}>Más recientes</option>
+                            <option value="precio_asc" {% if orden == 'precio_asc' %}selected{% endif %}>Menor precio</option>
+                            <option value="precio_desc" {% if orden == 'precio_desc' %}selected{% endif %}>Mayor precio</option>
+                            <option value="stock_desc" {% if orden == 'stock_desc' %}selected{% endif %}>Mayor stock</option>
+                            <option value="nombre_asc" {% if orden == 'nombre_asc' %}selected{% endif %}>Nombre A-Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Active Filters Badges -->
+                {% if search_query or categoria_seleccionada or estado_filtro != 'TODOS' or stock_filtro != 'todos' or precio_max != '100000' %}
+                <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                    <span class="badge bg-light text-dark border">
+                        Filtros activos:
+                        {% if search_query %} "{{ search_query }}"{% endif %}
+                        {% if estado_filtro != 'TODOS' %} | Estado: {{ estado_filtro }}{% endif %}
+                        {% if stock_filtro != 'todos' %} | Stock: {{ stock_filtro }}{% endif %}
+                        {% if precio_max != '100000' %} | Máx: ${{ precio_max }}{% endif %}
+                    </span>
+                    <a href="{% url 'catalogo' %}" class="small text-danger text-decoration-none fw-semibold">
+                        <i class="fa-solid fa-xmark me-1"></i>Quitar filtros
+                    </a>
+                </div>
+                {% endif %}
+
+                <!-- Equipment 8-Grid (4 cols x 2 rows) -->
+                <div class="row g-3 g-xl-4">
+                    {% for item in equipos %}
+                    <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+                        <div class="catalog-card">
+                            <!-- Image centered on top -->
+                            <a href="{% url 'detalle_equipo' item.id %}" class="catalog-card-img-box text-decoration-none" title="Ver detalle de {{ item.nombre }}">
+                                {% if item.imagen %}
+                                <img src="{{ item.imagen.url }}" alt="{{ item.nombre }}">
+                                {% else %}
+                                <i class="fa-solid fa-screwdriver-wrench fa-3x text-muted"></i>
+                                {% endif %}
+                            </a>
+
+                            <!-- Title -->
+                            <a href="{% url 'detalle_equipo' item.id %}" class="text-decoration-none" title="Ver detalle de {{ item.nombre }}">
+                                <h4 class="catalog-card-title">{{ item.nombre }}</h4>
+                            </a>
+
+                            <!-- Price (Highlighted Yellow) -->
+                            <div class="catalog-card-price">
+                                {{ item.tarifa_formateada }}
+                                <span class="catalog-card-price-unit">/ día</span>
+                            </div>
+
+                            <!-- Meta: Stock + Estado -->
+                            <div class="catalog-card-meta-row">
+                                <span class="catalog-stock-tag" title="Stock actual">
+                                    <i class="fa-solid fa-box text-muted"></i> Stock: {{ item.stock }}
+                                </span>
+                                <span class="catalog-status-tag text-{{ item.estado|lower }}">
+                                    <span class="status-dot dot-{{ item.estado|lower }}"></span>
+                                    {{ item.get_estado_display }}
+                                </span>
+                            </div>
+
+                            <!-- Action Button: Arrendar Ahora with Cart Icon -->
+                            <div>
+                                <button type="button" 
+                                        class="btn-catalog-rent"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#rentalModal"
+                                        data-id="{{ item.id }}"
+                                        data-nombre="{{ item.nombre }}"
+                                        data-tarifa="{{ item.tarifa_diaria }}"
+                                        data-tarifa-formateada="{{ item.tarifa_formateada }}"
+                                        data-stock="{{ item.stock }}"
+                                        data-estado="{{ item.estado }}"
+                                        data-estado-display="{{ item.get_estado_display }}"
+                                        data-categoria="{{ item.categoria.nombre }}"
+                                        data-img="{% if item.imagen %}{{ item.imagen.url }}{% endif %}">
+                                    <i class="fa-solid fa-cart-shopping"></i> Arrendar Ahora
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 py-5 text-center">
+                        <div class="p-5 bg-white rounded-4 border shadow-sm">
+                            <i class="fa-solid fa-magnifying-glass fa-3x text-muted mb-3"></i>
+                            <h4 class="fw-bold">No se encontraron equipos</h4>
+                            <p class="text-muted">Prueba cambiando o limpiando los filtros en la barra lateral.</p>
+                            <a href="{% url 'catalogo' %}" class="btn btn-warning rounded-pill px-4 fw-bold">
+                                Restablecer Catálogo
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- BOTTOM PAGINATION BAR (Matching Mockup 1:1) -->
+                {% if page_obj.paginator.count > 0 %}
+                <div class="catalog-pagination-bar">
+                    <!-- Left: Showing items counter -->
+                    <div class="pagination-counter">
+                        <i class="fa-solid fa-box-open"></i>
+                        <span>Mostrando {{ page_obj.start_index }} – {{ page_obj.end_index }} de {{ page_obj.paginator.count }} equipos</span>
+                    </div>
+
+                    <!-- Right: Numbered Pagination Controls -->
+                    <div class="pagination-controls">
+                        {% if page_obj.has_previous %}
+                        <a href="?{% if filter_params %}{{ filter_params }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-btn" title="Anterior">
+                            <i class="fa-solid fa-angle-left"></i>
+                        </a>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <span class="page-btn active">{{ num }}</span>
+                            {% else %}
+                            <a href="?{% if filter_params %}{{ filter_params }}&{% endif %}page={{ num }}" class="page-btn">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <a href="?{% if filter_params %}{{ filter_params }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-btn" title="Siguiente">
+                            <i class="fa-solid fa-angle-right"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- RENTAL MODAL (Arrendar Ahora Funcional) -->
+<div class="modal fade" id="rentalModal" tabindex="-1" aria-labelledby="rentalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header text-white" style="background-color: var(--brand-dark);">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="brand-icon-gear" style="width: 30px; height: 30px; font-size: 1rem;">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </span>
+                    <h5 class="modal-title fw-bold" id="rentalModalLabel">Solicitud de Arriendo</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="rentalForm" method="POST" action="">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <div class="modal-body p-4">
+                    <!-- Equipment Summary Box -->
+                    <div class="d-flex gap-3 align-items-center p-3 rounded-3 mb-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                        <div id="modalEquipImgWrapper" class="equip-img-wrapper" style="width: 75px; height: 75px;">
+                            <img id="modalEquipImg" src="" alt="Equipo" style="max-height: 100%;">
+                        </div>
+                        <div>
+                            <span id="modalEquipCategoria" class="badge bg-secondary mb-1">Categoría</span>
+                            <h5 id="modalEquipNombre" class="fw-bold mb-1">Nombre Equipo</h5>
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="fw-bold fs-5 text-warning" id="modalEquipTarifa">$0 / día</span>
+                                <span id="modalEquipStockBadge" class="badge bg-light text-dark border">Stock: 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning if in maintenance or out of stock -->
+                    <div id="modalWarning" class="alert alert-warning d-none py-2 mb-3" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                        <span id="modalWarningText"></span>
+                    </div>
+
+                    <!-- Rental Form Inputs -->
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Nombre del Cliente / Empresa</label>
+                            <input type="text" name="cliente_nombre" class="form-control" placeholder="Ej: Constructora Los Andes" required value="Isaac Molina">
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Días de Arriendo</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-regular fa-clock"></i></span>
+                                <input type="number" id="inputDias" name="dias" class="form-control" min="1" max="90" value="3" required>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Cantidad a Arrendar</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                                <input type="number" id="inputCantidad" name="cantidad" class="form-control" min="1" value="1" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Estimated Cost Calculation -->
+                    <div class="mt-4 p-3 rounded-3" style="background-color: var(--brand-yellow-light); border: 1.5px dashed var(--brand-yellow);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="small text-muted fw-bold d-block">Total Estimado de Arriendo:</span>
+                                <span class="text-muted" style="font-size: 0.75rem;" id="calcFormula">Tarifa x Días x Cantidad</span>
+                            </div>
+                            <div class="text-end">
+                                <span class="fs-4 fw-extrabold text-dark" id="modalTotalCalculado">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light border-top-0 px-4 py-3 d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="btnConfirmRental" class="btn btn-warning rounded-pill px-4 fw-bold">
+                        <i class="fa-solid fa-cart-shopping me-1"></i> Arrendar Ahora (Guardar en Sesión)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updatePriceSlider(val) {
+    document.getElementById('inputPrecioMax').value = val;
+    const formatted = '$' + parseInt(val).toLocaleString('es-CL');
+    document.getElementById('displayPrecioMax').value = formatted;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const rentalModal = document.getElementById('rentalModal');
+    if (!rentalModal) return;
+
+    let currentTarifa = 0;
+    let currentStock = 0;
+    let currentEstado = '';
+
+    rentalModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const nombre = button.getAttribute('data-nombre');
+        const tarifa = parseFloat(button.getAttribute('data-tarifa')) || 0;
+        const tarifaFormateada = button.getAttribute('data-tarifa-formateada');
+        const stock = parseInt(button.getAttribute('data-stock')) || 0;
+        const estado = button.getAttribute('data-estado');
+        const categoria = button.getAttribute('data-categoria');
+        const img = button.getAttribute('data-img');
+
+        currentTarifa = tarifa;
+        currentStock = stock;
+        currentEstado = estado;
+
+        const form = document.getElementById('rentalForm');
+        form.action = `/arrendar/${id}/`;
+
+        document.getElementById('modalEquipNombre').textContent = nombre;
+        document.getElementById('modalEquipCategoria').textContent = categoria;
+        document.getElementById('modalEquipTarifa').textContent = `${tarifaFormateada} / día`;
+        document.getElementById('modalEquipStockBadge').textContent = `Stock disponible: ${stock}`;
+
+        const imgEl = document.getElementById('modalEquipImg');
+        if (img) {
+            imgEl.src = img;
+            imgEl.style.display = 'block';
+        } else {
+            imgEl.style.display = 'none';
+        }
+
+        const inputCantidad = document.getElementById('inputCantidad');
+        inputCantidad.max = Math.max(1, stock);
+        inputCantidad.value = stock > 0 ? 1 : 0;
+
+        const warningEl = document.getElementById('modalWarning');
+        const warningText = document.getElementById('modalWarningText');
+        const btnConfirm = document.getElementById('btnConfirmRental');
+
+        if (estado === 'MANTENCION') {
+            warningEl.classList.remove('d-none');
+            warningText.textContent = 'Este equipo está en mantención preventiva y no puede ser arrendado actualmente.';
+            btnConfirm.disabled = true;
+        } else if (stock <= 0) {
+            warningEl.classList.remove('d-none');
+            warningText.textContent = 'Este equipo se encuentra actualmente sin stock disponible (Stock: 0).';
+            btnConfirm.disabled = true;
+        } else {
+            warningEl.classList.add('d-none');
+            btnConfirm.disabled = false;
+        }
+
+        recalculateTotal();
+    });
+
+    const inputDias = document.getElementById('inputDias');
+    const inputCantidad = document.getElementById('inputCantidad');
+
+    function recalculateTotal() {
+        const dias = Math.max(1, parseInt(inputDias.value) || 1);
+        const cantidad = Math.max(1, parseInt(inputCantidad.value) || 1);
+        const total = Math.round(currentTarifa * dias * cantidad);
+
+        const formatted = '$' + total.toLocaleString('es-CL');
+        document.getElementById('modalTotalCalculado').textContent = formatted;
+        document.getElementById('calcFormula').textContent = `$${Math.round(currentTarifa).toLocaleString('es-CL')} x ${dias} día(s) x ${cantidad} unid.`;
+    }
+
+    inputDias.addEventListener('input', recalculateTotal);
+    inputCantidad.addEventListener('input', recalculateTotal);
+});
+</script>
+{% endblock %}

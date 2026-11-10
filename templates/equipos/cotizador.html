@@ -1,0 +1,486 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cotizador de Arriendos - Canasta en Sesión | RentEquip{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Banner */
+    .cotizador-banner-section {
+        background-color: var(--brand-dark);
+        position: relative;
+        overflow: hidden;
+        color: white;
+        padding: 2.25rem 0 2rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hazard-stripe-accent {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 18px;
+        background: repeating-linear-gradient(
+            -45deg,
+            var(--brand-yellow),
+            var(--brand-yellow) 10px,
+            #14171d 10px,
+            #14171d 20px
+        );
+        z-index: 2;
+    }
+
+    .cotizador-banner-content {
+        position: relative;
+        z-index: 3;
+        padding-left: 10px;
+    }
+
+    .cotizador-title {
+        font-size: 2.3rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 0.35rem;
+    }
+
+    .cotizador-title span {
+        color: var(--brand-yellow);
+    }
+
+    .cotizador-subtitle {
+        font-size: 0.98rem;
+        color: #94a3b8;
+        margin-bottom: 0;
+    }
+
+    /* Breadcrumbs */
+    .cotizador-breadcrumbs-bar {
+        background-color: #11141a;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.84rem;
+    }
+
+    .breadcrumb-item-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #94a3b8;
+        text-decoration: none;
+    }
+
+    .breadcrumb-item-custom i {
+        color: var(--brand-yellow);
+    }
+
+    .breadcrumb-item-custom:hover {
+        color: #f1f5f9;
+    }
+
+    .breadcrumb-sep {
+        color: #64748b;
+        margin: 0 8px;
+    }
+
+    .breadcrumb-current {
+        color: #e2e8f0;
+        font-weight: 600;
+    }
+
+    /* Items Card */
+    .session-item-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1.15rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .session-item-card:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    }
+
+    .session-item-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 10px;
+        background: #fafbfc;
+        border: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        flex-shrink: 0;
+    }
+
+    .session-item-img img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .session-stepper-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #334155;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .session-stepper-btn:hover {
+        background: var(--brand-yellow);
+        color: #000;
+        border-color: var(--brand-yellow);
+    }
+
+    .session-stepper-input {
+        width: 48px;
+        height: 32px;
+        text-align: center;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    /* Financial Summary Card */
+    .financial-summary-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+        overflow: hidden;
+        position: sticky;
+        top: 20px;
+    }
+
+    .financial-header {
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        padding: 0.9rem 1.25rem;
+        font-weight: 800;
+        font-size: 1.05rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .financial-body {
+        padding: 1.35rem 1.25rem;
+    }
+
+    .financial-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        font-size: 0.92rem;
+    }
+
+    .legal-tag {
+        font-size: 0.72rem;
+        background: #e0f2fe;
+        color: #0369a1;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 6px;
+    }
+
+    .garantia-tag {
+        font-size: 0.72rem;
+        background: #fef3c7;
+        color: #92400e;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 6px;
+    }
+
+    .financial-total-box {
+        background-color: var(--brand-yellow-light);
+        border: 1.5px dashed var(--brand-yellow);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1.25rem;
+        text-align: right;
+    }
+
+    .btn-confirm-order {
+        width: 100%;
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-weight: 800;
+        font-size: 0.96rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-confirm-order:hover {
+        background-color: var(--brand-yellow-hover);
+        color: #000;
+        box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Flash Messages -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}info{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fa-solid {% if message.tags == 'error' %}fa-triangle-exclamation{% elif message.tags == 'success' %}fa-circle-check{% else %}fa-circle-info{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- BANNER -->
+<section class="cotizador-banner-section">
+    <div class="hazard-stripe-accent"></div>
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-8 cotizador-banner-content">
+                <h1 class="cotizador-title">Cotizador / <span>Canasta de Arriendo</span></h1>
+                <p class="cotizador-subtitle">
+                    Colección transitoria en sesión con cálculo legal de IVA (19%) y garantía reembolsable (Criterio 2.1.4).
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- BREADCRUMBS -->
+<nav class="cotizador-breadcrumbs-bar" aria-label="breadcrumb">
+    <div class="container">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'home' %}" class="breadcrumb-item-custom">
+                <i class="fa-solid fa-house"></i> Inicio
+            </a>
+            <span class="breadcrumb-sep">&gt;</span>
+            <a href="{% url 'catalogo' %}" class="breadcrumb-item-custom">Catálogo</a>
+            <span class="breadcrumb-sep">&gt;</span>
+            <span class="breadcrumb-current">Cotizador de Sesión</span>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="container py-4 my-2">
+    <div class="row g-4 align-items-start">
+        
+        <!-- LEFT COLUMN: ITEMS EN SESIÓN (8 cols) -->
+        <div class="col-12 col-lg-8">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h4 class="fw-bold m-0 text-dark">
+                    <i class="fa-solid fa-boxes-packing text-warning me-2"></i>
+                    Equipos en Sesión ({{ totales.total_items }})
+                </h4>
+                {% if items %}
+                <a href="{% url 'vaciar_cotizacion' %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Seguro que deseas vaciar tu cotizador?');">
+                    <i class="fa-solid fa-trash me-1"></i> Vaciar Canasta
+                </a>
+                {% endif %}
+            </div>
+
+            {% if items %}
+                <!-- LIST OF ITEMS IN SESSION -->
+                {% for item in items %}
+                <div class="session-item-card">
+                    <div class="row g-3 align-items-center">
+                        <!-- Img -->
+                        <div class="col-auto">
+                            <div class="session-item-img">
+                                {% if item.imagen_url %}
+                                <img src="{{ item.imagen_url }}" alt="{{ item.nombre }}">
+                                {% else %}
+                                <i class="fa-solid fa-wrench fa-2x text-muted"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Data & Info -->
+                        <div class="col">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="badge bg-light text-dark border" style="font-size: 0.72rem;">{{ item.codigo }}</span>
+                                <span class="badge bg-secondary" style="font-size: 0.72rem;">{{ item.categoria }}</span>
+                            </div>
+                            <h5 class="fw-bold mb-1 text-dark">{{ item.nombre }}</h5>
+                            <div class="small text-muted">
+                                Tarifa unitaria: <span class="fw-bold text-warning">{{ item.tarifa_diaria_formateada }} / día</span> |
+                                Garantía unitaria: <span class="fw-bold text-secondary">{{ item.garantia_unitaria_formateada }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Controls Form (Días y Cantidad) -->
+                        <div class="col-12 col-md-auto">
+                            <form method="POST" action="{% url 'actualizar_cotizacion' item.id %}" class="d-flex align-items-center gap-3">
+                                {% csrf_token %}
+                                <div>
+                                    <label class="d-block text-muted" style="font-size: 0.72rem; font-weight: 700;">DÍAS:</label>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <input type="number" name="dias" value="{{ item.dias }}" min="1" max="90" class="session-stepper-input" onchange="this.form.submit();">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="d-block text-muted" style="font-size: 0.72rem; font-weight: 700;">CANT.:</label>
+                                    <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1" max="{{ item.stock_max }}" class="session-stepper-input" onchange="this.form.submit();">
+                                </div>
+
+                                <!-- Subtotal Item -->
+                                <div class="text-end" style="min-width: 95px;">
+                                    <label class="d-block text-muted" style="font-size: 0.72rem; font-weight: 700;">SUBTOTAL:</label>
+                                    <span class="fw-extrabold fs-6 text-dark">{{ item.subtotal_item_formateado }}</span>
+                                </div>
+
+                                <!-- Delete button -->
+                                <a href="{% url 'eliminar_de_cotizacion' item.id %}" class="btn btn-sm btn-light text-danger border" title="Eliminar ítem">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <a href="{% url 'catalogo' %}" class="btn btn-outline-dark rounded-pill px-3 fw-bold">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Explorar Más Equipos
+                    </a>
+                </div>
+
+            {% else %}
+                <!-- EMPTY STATE -->
+                <div class="p-5 bg-white rounded-4 border text-center shadow-sm">
+                    <div class="mb-3">
+                        <span class="brand-icon-gear" style="width: 60px; height: 60px; font-size: 1.8rem; background-color: var(--brand-yellow-light); color: var(--brand-yellow); border: 2px dashed var(--brand-yellow);">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </span>
+                    </div>
+                    <h4 class="fw-bold text-dark">Tu cotizador está vacío</h4>
+                    <p class="text-muted" style="max-width: 460px; margin: 0 auto 1.5rem auto;">
+                        No tienes herramientas ni maquinaria guardadas en tu sesión actual. Selecciona cualquier equipo en el catálogo para cotizar sus días de uso con cálculo legal de IVA y garantía.
+                    </p>
+                    <a href="{% url 'catalogo' %}" class="btn btn-warning rounded-pill px-4 fw-bold">
+                        <i class="fa-solid fa-magnifying-glass me-1"></i> Ir al Catálogo de Equipos
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- RIGHT COLUMN: DESGLOSE FINANCIERO Y CONFIRMACIÓN (4 cols) -->
+        <div class="col-12 col-lg-4">
+            <div class="financial-summary-card">
+                <div class="financial-header">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Resumen Financiero Legal</span>
+                </div>
+
+                <div class="financial-body">
+                    <!-- Subtotal Neto -->
+                    <div class="financial-row">
+                        <span class="text-secondary fw-semibold">Subtotal Neto:</span>
+                        <span class="fw-bold text-dark">{{ totales.subtotal_neto_formateado }}</span>
+                    </div>
+
+                    <!-- IVA 19% -->
+                    <div class="financial-row">
+                        <span class="text-secondary fw-semibold">
+                            IVA (19% Legal):
+                            <span class="legal-tag">Ley 825</span>
+                        </span>
+                        <span class="fw-bold text-dark">{{ totales.iva_formateado }}</span>
+                    </div>
+
+                    <!-- Subtotal con IVA -->
+                    <div class="financial-row pt-1 border-top">
+                        <span class="text-secondary fw-semibold">Total Arriendo c/IVA:</span>
+                        <span class="fw-bold text-dark">{{ totales.subtotal_con_iva_formateado }}</span>
+                    </div>
+
+                    <!-- Garantía Reembolsable -->
+                    <div class="financial-row">
+                        <span class="text-secondary fw-semibold">
+                            Garantía en Depósito:
+                            <span class="garantia-tag">100% Reembolsable</span>
+                        </span>
+                        <span class="fw-bold text-dark">{{ totales.garantia_total_formateada }}</span>
+                    </div>
+
+                    <!-- Total Final Highlight -->
+                    <div class="financial-total-box">
+                        <span class="small text-muted fw-bold d-block text-uppercase">Total Estimado a Pagar:</span>
+                        <span class="fs-3 fw-extrabold text-dark">{{ totales.total_final_formateado }}</span>
+                        <span class="d-block small text-muted" style="font-size: 0.72rem;">Incluye Arriendo + IVA (19%) + Depósito de Garantía</span>
+                    </div>
+
+                    <!-- Confirmation Form -->
+                    {% if items %}
+                    <form method="POST" action="{% url 'confirmar_cotizacion' %}">
+                        {% csrf_token %}
+                        <h6 class="fw-bold mb-2 text-dark" style="font-size: 0.88rem;">Datos de Contacto para Formalizar:</h6>
+                        
+                        <div class="mb-2">
+                            <input type="text" name="cliente_nombre" class="form-control form-control-sm" placeholder="Nombre o Razón Social *" required value="Isaac Molina">
+                        </div>
+
+                        <div class="mb-2">
+                            <input type="text" name="cliente_rut" class="form-control form-control-sm" placeholder="RUT Empresa / Cédula *" required value="12.345.678-9">
+                        </div>
+
+                        <div class="mb-2">
+                            <input type="tel" name="cliente_telefono" class="form-control form-control-sm" placeholder="Teléfono de Contacto" value="+56 9 8765 4321">
+                        </div>
+
+                        <div class="mb-2">
+                            <input type="email" name="cliente_email" class="form-control form-control-sm" placeholder="Correo Electrónico" value="isaac.molina@correo.cl">
+                        </div>
+
+                        <div class="mb-3">
+                            <input type="text" name="direccion_faena" class="form-control form-control-sm" placeholder="Dirección / Obra de Faena" value="Av. Libertador 4500, Santiago">
+                        </div>
+
+                        <button type="submit" class="btn-confirm-order">
+                            <i class="fa-solid fa-check-double"></i> Confirmar Solicitud de Arriendo
+                        </button>
+                    </form>
+                    {% else %}
+                    <button class="btn btn-secondary w-100 py-2 rounded-3 fw-bold" disabled>
+                        Agrega equipos para cotizar
+                    </button>
+                    {% endif %}
+
+                    <!-- Trust Footer -->
+                    <div class="mt-3 pt-2 border-top text-center text-muted" style="font-size: 0.76rem;">
+                        <i class="fa-solid fa-shield-halved text-success me-1"></i> Transacción segura y conforme a la normativa legal de arriendos.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

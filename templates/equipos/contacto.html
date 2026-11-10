@@ -1,0 +1,561 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contacto / Cotización - RentEquip{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Contact Top Banner */
+    .contact-banner-section {
+        background-color: var(--brand-dark);
+        position: relative;
+        overflow: hidden;
+        color: white;
+        padding: 2.25rem 0 2rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hazard-stripe-accent {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 18px;
+        background: repeating-linear-gradient(
+            -45deg,
+            var(--brand-yellow),
+            var(--brand-yellow) 10px,
+            #14171d 10px,
+            #14171d 20px
+        );
+        z-index: 2;
+    }
+
+    .contact-banner-content {
+        position: relative;
+        z-index: 3;
+        padding-left: 10px;
+    }
+
+    .contact-banner-title {
+        font-size: 2.3rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 0.35rem;
+    }
+
+    .contact-banner-title span {
+        color: var(--brand-yellow);
+    }
+
+    .contact-banner-subtitle {
+        font-size: 0.98rem;
+        color: #94a3b8;
+        margin-bottom: 0;
+        max-width: 580px;
+    }
+
+    .contact-banner-bg-img {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 100%;
+        max-width: 55%;
+        object-fit: cover;
+        opacity: 0.9;
+        mask-image: linear-gradient(to right, transparent 0%, black 35%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%);
+    }
+
+    /* Breadcrumbs */
+    .contact-breadcrumbs-bar {
+        background-color: #11141a;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.84rem;
+    }
+
+    .breadcrumb-item-custom {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #94a3b8;
+        text-decoration: none;
+    }
+
+    .breadcrumb-item-custom i {
+        color: var(--brand-yellow);
+    }
+
+    .breadcrumb-item-custom:hover {
+        color: #f1f5f9;
+    }
+
+    .breadcrumb-sep {
+        color: #64748b;
+        margin: 0 8px;
+    }
+
+    .breadcrumb-current {
+        color: #e2e8f0;
+        font-weight: 600;
+    }
+
+    /* Left Card: Contáctanos (Dark Card) */
+    .contact-info-card {
+        background-color: #161920;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        padding: 2rem 1.85rem;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .contact-info-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 0.6rem;
+    }
+
+    .contact-info-header i {
+        color: var(--brand-yellow);
+        font-size: 1.5rem;
+    }
+
+    .contact-info-title {
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 0;
+    }
+
+    .contact-info-desc {
+        color: #94a3b8;
+        font-size: 0.88rem;
+        line-height: 1.5;
+        margin-bottom: 1.75rem;
+        max-width: 330px;
+    }
+
+    /* Contact Details List */
+    .contact-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .contact-detail-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .contact-icon-bubble {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        flex-shrink: 0;
+        box-shadow: 0 3px 10px rgba(245, 166, 35, 0.35);
+    }
+
+    .contact-detail-texts {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .contact-detail-label {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        font-weight: 600;
+        margin-bottom: 1px;
+    }
+
+    .contact-detail-val {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #f1f5f9;
+        margin: 0;
+    }
+
+    /* Excavator Graphic at bottom of card */
+    .contact-card-excavator-img {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        max-width: 260px;
+        height: auto;
+        opacity: 0.88;
+        pointer-events: none;
+        z-index: 1;
+        mask-image: linear-gradient(to top, black 70%, transparent 100%), linear-gradient(to left, black 70%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to top, black 70%, transparent 100%), linear-gradient(to left, black 70%, transparent 100%);
+    }
+
+    /* Right Card: Solicita una Cotización (White Card) */
+    .quote-form-card {
+        background-color: #ffffff;
+        border-radius: 18px;
+        border: 1px solid #e2e8f0;
+        padding: 2.25rem 2rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
+        height: 100%;
+    }
+
+    .quote-header-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 1.75rem;
+    }
+
+    .quote-header-icon {
+        color: var(--brand-yellow);
+        font-size: 1.75rem;
+        margin-top: 2px;
+    }
+
+    .quote-header-title {
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 0.2rem;
+    }
+
+    .quote-header-desc {
+        color: #64748b;
+        font-size: 0.88rem;
+        margin: 0;
+    }
+
+    /* Form Fields Styling */
+    .form-group-custom {
+        margin-bottom: 1.15rem;
+    }
+
+    .form-label-custom {
+        display: block;
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.4rem;
+    }
+
+    .form-label-custom span.required {
+        color: #ef4444;
+    }
+
+    .input-box-with-icon {
+        display: flex;
+        align-items: center;
+        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 0.55rem 0.9rem;
+        gap: 10px;
+        transition: all 0.2s;
+    }
+
+    .input-box-with-icon:focus-within {
+        border-color: var(--brand-yellow);
+        box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+    }
+
+    .input-box-with-icon i {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        width: 18px;
+        text-align: center;
+    }
+
+    .input-box-with-icon input,
+    .input-box-with-icon select {
+        border: none;
+        outline: none;
+        background: transparent;
+        width: 100%;
+        font-size: 0.9rem;
+        color: #1e293b;
+    }
+
+    .input-box-with-icon select {
+        cursor: pointer;
+    }
+
+    .input-box-with-icon textarea {
+        border: none;
+        outline: none;
+        background: transparent;
+        width: 100%;
+        font-size: 0.9rem;
+        color: #1e293b;
+        resize: vertical;
+        min-height: 85px;
+    }
+
+    .privacy-check-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 0.4rem;
+        margin-bottom: 1.25rem;
+        font-size: 0.84rem;
+        color: #475569;
+    }
+
+    .privacy-check-row input[type="checkbox"] {
+        accent-color: var(--brand-yellow);
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .privacy-check-row a {
+        color: var(--brand-yellow-hover);
+        text-decoration: underline;
+        font-weight: 600;
+    }
+
+    .btn-submit-quote {
+        width: 100%;
+        background-color: var(--brand-yellow);
+        color: #14171d;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-weight: 800;
+        font-size: 0.96rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-submit-quote:hover {
+        background-color: var(--brand-yellow-hover);
+        color: #000;
+        box-shadow: 0 4px 15px rgba(245, 166, 35, 0.4);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Flash Messages -->
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'success' %}success{% else %}info{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fa-solid {% if message.tags == 'error' %}fa-triangle-exclamation{% elif message.tags == 'success' %}fa-circle-check{% else %}fa-circle-info{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- TOP BANNER: CONTACTO / COTIZACIÓN -->
+<section class="contact-banner-section">
+    <div class="hazard-stripe-accent"></div>
+
+    <div class="container position-relative">
+        <div class="row align-items-center">
+            <div class="col-lg-7 contact-banner-content">
+                <h1 class="contact-banner-title">Contacto / <span>Cotización</span></h1>
+                <p class="contact-banner-subtitle">
+                    ¿Tienes alguna consulta? Escríbenos y te ayudaremos a encontrar el equipo ideal para tu proyecto.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Excavator image on right -->
+    <img src="{% static 'img/hero_excavator.png' %}" alt="Excavadora RentEquip" class="contact-banner-bg-img d-none d-md-block">
+</section>
+
+<!-- BREADCRUMBS BAR -->
+<nav class="contact-breadcrumbs-bar" aria-label="breadcrumb">
+    <div class="container">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'home' %}" class="breadcrumb-item-custom">
+                <i class="fa-solid fa-house"></i> Inicio
+            </a>
+            <span class="breadcrumb-sep">&gt;</span>
+            <span class="breadcrumb-current">Contacto</span>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT SECTION (2 CARDS: CONTÁCTANOS + SOLICITA UNA COTIZACIÓN) -->
+<div class="container py-4 my-2">
+    <div class="row g-4 align-items-stretch">
+        
+        <!-- LEFT CARD: CONTÁCTANOS (DARK CARD) -->
+        <div class="col-12 col-lg-5">
+            <div class="contact-info-card">
+                <!-- Header -->
+                <div class="contact-info-header">
+                    <i class="fa-solid fa-comment-dots"></i>
+                    <h3 class="contact-info-title">Contáctanos</h3>
+                </div>
+                <p class="contact-info-desc">
+                    Estamos disponibles para resolver tus dudas sobre arriendo de equipos y herramientas.
+                </p>
+
+                <!-- Contact Details List -->
+                <div class="contact-items-list">
+                    <!-- 1. Teléfono -->
+                    <div class="contact-detail-row">
+                        <div class="contact-icon-bubble">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                        <div class="contact-detail-texts">
+                            <span class="contact-detail-label">Teléfono</span>
+                            <span class="contact-detail-val">+56 9 1234 5678</span>
+                        </div>
+                    </div>
+
+                    <!-- 2. Correo Electrónico -->
+                    <div class="contact-detail-row">
+                        <div class="contact-icon-bubble">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div class="contact-detail-texts">
+                            <span class="contact-detail-label">Correo Electrónico</span>
+                            <span class="contact-detail-val">ventas@rentequip.cl</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. Dirección -->
+                    <div class="contact-detail-row">
+                        <div class="contact-icon-bubble">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div class="contact-detail-texts">
+                            <span class="contact-detail-label">Dirección</span>
+                            <span class="contact-detail-val">Av. Maquinaria 1234, Santiago, Chile</span>
+                        </div>
+                    </div>
+
+                    <!-- 4. Horario de Atención -->
+                    <div class="contact-detail-row">
+                        <div class="contact-icon-bubble">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div class="contact-detail-texts">
+                            <span class="contact-detail-label">Horario de Atención</span>
+                            <span class="contact-detail-val">Lun - Vie: 08:00 a 20:00 hrs</span>
+                            <span class="contact-detail-val text-muted small" style="font-weight: 500;">Sáb: 09:00 a 14:00 hrs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Excavator graphic inside card -->
+                <img src="{% static 'img/contact_excavator.png' %}" alt="Maquinaria RentEquip" class="contact-card-excavator-img" onerror="this.src='{% static 'img/excavadora.png' %}';">
+            </div>
+        </div>
+
+        <!-- RIGHT CARD: SOLICITA UNA COTIZACIÓN (FORMULARIO) -->
+        <div class="col-12 col-lg-7">
+            <div class="quote-form-card">
+                <!-- Header -->
+                <div class="quote-header-box">
+                    <i class="fa-solid fa-paper-plane quote-header-icon"></i>
+                    <div>
+                        <h2 class="quote-header-title">Solicita una Cotización</h2>
+                        <p class="quote-header-desc">Completa el formulario y nos pondremos en contacto contigo a la brevedad.</p>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form method="POST" action="{% url 'contacto' %}">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <!-- Nombre Completo -->
+                        <div class="col-12 col-md-6 form-group-custom">
+                            <label class="form-label-custom">Nombre Completo <span class="required">*</span></label>
+                            <div class="input-box-with-icon">
+                                <i class="fa-solid fa-user"></i>
+                                <input type="text" name="nombre" placeholder="Tu nombre" required value="Isaac Molina">
+                            </div>
+                        </div>
+
+                        <!-- Correo Electrónico -->
+                        <div class="col-12 col-md-6 form-group-custom">
+                            <label class="form-label-custom">Correo Electrónico <span class="required">*</span></label>
+                            <div class="input-box-with-icon">
+                                <i class="fa-solid fa-envelope"></i>
+                                <input type="email" name="email" placeholder="tu@email.cl" required value="isaac.molina@correo.cl">
+                            </div>
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div class="col-12 col-md-6 form-group-custom">
+                            <label class="form-label-custom">Teléfono</label>
+                            <div class="input-box-with-icon">
+                                <i class="fa-solid fa-phone"></i>
+                                <input type="tel" name="telefono" placeholder="Tu teléfono" value="+56 9 8765 4321">
+                            </div>
+                        </div>
+
+                        <!-- Tipo de Equipo -->
+                        <div class="col-12 col-md-6 form-group-custom">
+                            <label class="form-label-custom">Tipo de Equipo</label>
+                            <div class="input-box-with-icon">
+                                <i class="fa-solid fa-table-cells-large"></i>
+                                <select name="tipo_equipo">
+                                    <option value="">Selecciona una categoría</option>
+                                    <option value="Maquinaria Pesada">Maquinaria Pesada (Excavadoras, Bobcat)</option>
+                                    <option value="Herramientas de Jardinería" selected>Herramientas de Jardinería (Cortacéspedes, etc.)</option>
+                                    <option value="Herramientas Eléctricas">Herramientas Eléctricas (Taladros, Sierras)</option>
+                                    <option value="Construcción y Altura">Construcción y Altura (Andamios, Betoneras)</option>
+                                    <option value="Generación y Energía">Generación y Energía (Generadores)</option>
+                                    <option value="Otro / Consulta General">Otro / Consulta General</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Consulta o Mensaje -->
+                        <div class="col-12 form-group-custom">
+                            <label class="form-label-custom">Tu Consulta o Mensaje <span class="required">*</span></label>
+                            <div class="input-box-with-icon align-items-start pt-2">
+                                <i class="fa-solid fa-comment-dots mt-1"></i>
+                                <textarea name="mensaje" placeholder="Cuéntanos en qué podemos ayudarte..." required rows="3">Hola, quisiera cotizar el arriendo de equipos pesados y herramientas de jardinería para un proyecto de 5 días en Santiago.</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Checkbox -->
+                    <div class="privacy-check-row">
+                        <input type="checkbox" id="privacyCheck" name="privacy" required checked>
+                        <label for="privacyCheck" class="m-0 cursor-pointer">
+                            Acepto la <a href="#">política de privacidad</a> y tratamiento de datos.
+                        </label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-submit-quote">
+                        <i class="fa-solid fa-paper-plane"></i> Enviar Consulta
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
